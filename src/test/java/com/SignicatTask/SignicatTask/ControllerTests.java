@@ -14,7 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.SignicatTask.SignicatTask.Archiving.ArchiveService;
 
+//TODO comment
 
 @WebMvcTest(Controller.class)
 public class ControllerTests {
@@ -54,6 +56,48 @@ public class ControllerTests {
                 //"Content-Disposition : attachment" ensures that file is downloaded by browser
                 .andExpect(MockMvcResultMatchers.header().string("Content-Disposition", "attachment; filename=\"archive.zip\""));
     }
+
+    @Test
+    public void testUploadOneFileTooLargeReturns413() throws Exception{
+
+        //file of size 3MB
+        MockMultipartFile file = new MockMultipartFile("bigfile", new byte[1024 * 1024 *3]);
+
+        when(service.archiveFiles(any())).thenReturn(CompletableFuture.completedFuture(new byte[]{1, 2, 3, 4}));
+
+        
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
+                .file(file))
+                .andExpect(MockMvcResultMatchers.status().isPayloadTooLarge());
+
+    }
+
+    @Test
+    public void testUploadMultipleFilesTooLargeReturns413() throws Exception{
+
+        //3 files of size 0.5MB
+        MockMultipartFile file1 = new MockMultipartFile("bigfile", new byte[1024 * 1024 * (1/2)]);
+        MockMultipartFile file2 = new MockMultipartFile("bigfile", new byte[1024 * 1024 * (1/2)]);
+        MockMultipartFile file3 = new MockMultipartFile("bigfile", new byte[1024 * 1024 * (1/2)]);
+
+        when(service.archiveFiles(any())).thenReturn(CompletableFuture.completedFuture(new byte[]{1, 2, 3, 4}));
+
+        
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
+                .file(file1).file(file2).file(file3))
+                .andExpect(MockMvcResultMatchers.status().isPayloadTooLarge());
+    }
+    @Test
+    public void testNoFileReturns400() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/upload"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+    
+
+
+
+
+    
 
 
 }
