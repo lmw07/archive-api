@@ -1,6 +1,9 @@
 package com.SignicatTask.SignicatTask.Repository;
+import java.time.LocalDate;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface LogRepository extends JpaRepository<RequestData, Integer> {
-
+@Repository
+public interface LogRepository extends JpaRepository<RequestData, Long> {
+    Long countByDateAndIpAddress(LocalDate date, String IpAddress);
 }
