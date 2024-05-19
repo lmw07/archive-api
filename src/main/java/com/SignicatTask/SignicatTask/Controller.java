@@ -10,7 +10,6 @@ import com.SignicatTask.SignicatTask.Repository.RequestData;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.HttpStatus;
 
@@ -49,11 +48,12 @@ public class Controller {
             long fileSizeInBytes = file.getSize();
             totalSize += fileSizeInBytes;
             if (fileSizeInBytes > MAX_FILE_SIZE || totalSize > MAX_TOTAL_SIZE) {
+                RequestData rqd = new RequestData(LocalDate.now(), request.getRemoteAddr(), RequestData.Status.FAIL);
+                logRepo.save(rqd);
                 return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("Files larger than 1MB not allowed.");
                 
             }
         }
-
 
         try {
             byte[] zipFile = archiveService.archiveFiles(files);
