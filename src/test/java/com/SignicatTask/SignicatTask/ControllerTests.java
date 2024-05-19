@@ -1,11 +1,15 @@
 package com.SignicatTask.SignicatTask;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,6 +21,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.SignicatTask.SignicatTask.Archiving.ArchiveService;
 import com.SignicatTask.SignicatTask.Repository.LogRepository;
+import com.SignicatTask.SignicatTask.Repository.RequestData;
 
 //TODO comment
 
@@ -36,46 +41,54 @@ public class ControllerTests {
     public void testUploadOneFileReturns200andZip() throws Exception{
         MockMultipartFile file = new MockMultipartFile("files", "Hello file".getBytes());
 
-        //when(service.archiveFiles(any())).thenReturn(CompletableFuture.completedFuture(new byte[]{1, 2, 3, 4}));
+        // when(service.archiveFiles(any())).thenReturn(CompletableFuture.completedFuture(new byte[]{1, 2, 3, 4}));
         when(service.archiveFiles(any())).thenReturn(new byte[]{1, 2, 3, 4});
         
         mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
                 .file(file))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                //"Content-Disposition : attachment" ensures that file is downloaded by browser
+                // "Content-Disposition : attachment" ensures that file is downloaded by browser
                 .andExpect(MockMvcResultMatchers.header().string("Content-Disposition", "attachment; filename=\"archive.zip\""));
-    }
+        //verify save 
+        verify(logRepository, times(1)).save(any(RequestData.class));
+        }
 
     @Test
     public void testUploadMultipleFileReturns200andZip() throws Exception{
         MockMultipartFile file1 = new MockMultipartFile("files", "Hello file, this is file 1".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("files", "Hello file, this is file 2".getBytes());
 
-        //when(service.archiveFiles(any())).thenReturn(CompletableFuture.completedFuture(new byte[]{1, 2, 3, 4}));
+        // when(service.archiveFiles(any())).thenReturn(CompletableFuture.completedFuture(new byte[]{1, 2, 3, 4}));
         when(service.archiveFiles(any())).thenReturn(new byte[]{1, 2, 3, 4});
         
         mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
                 .file(file1)
                 .file(file2))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                //"Content-Disposition : attachment" ensures that file is downloaded by browser
+                // "Content-Disposition : attachment" ensures that file is downloaded by browser
                 .andExpect(MockMvcResultMatchers.header().string("Content-Disposition", "attachment; filename=\"archive.zip\""));
+         
+        //verify save 
+        verify(logRepository, times(1)).save(any(RequestData.class));
     }
 
     @Test
     public void testUploadOneFileTooLargeReturns413() throws Exception{
 
-        //file of size 3MB
+        // file of size 3MB
         int fileSize = 1024 * 1024 *3;
-        MockMultipartFile file = new MockMultipartFile("bigfile", new byte[fileSize]);
+        MockMultipartFile file = new MockMultipartFile("files", new byte[fileSize]);
 
-        //when(service.archiveFiles(any())).thenReturn(CompletableFuture.completedFuture(new byte[]{1, 2, 3, 4}));
+        // when(service.archiveFiles(any())).thenReturn(CompletableFuture.completedFuture(new byte[]{1, 2, 3, 4}));
         when(service.archiveFiles(any())).thenReturn(new byte[]{1, 2, 3, 4});
         
         // Expect status code 413 (Payload too large)
         mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
                 .file(file))
                 .andExpect(MockMvcResultMatchers.status().isPayloadTooLarge());
+         
+        //verify save 
+        verify(logRepository, times(1)).save(any(RequestData.class));
 
     }
 
@@ -98,6 +111,12 @@ public class ControllerTests {
         // Expect status code 413 (Payload too large)
         mockMvc.perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isPayloadTooLarge());
+
+        //verify save 
+        verify(logRepository, times(1)).save(any(RequestData.class));
+            
+       
+
 }
     @Test
     public void testNoFileReturns400() throws Exception{
