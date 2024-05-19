@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.SignicatTask.SignicatTask.Archiving.ArchiveService;
+import com.SignicatTask.SignicatTask.Repository.LogRepository;
 
 //TODO comment
 
@@ -26,6 +27,9 @@ public class ControllerTests {
 
     @MockBean
     private ArchiveService service;
+
+    @MockBean
+    private LogRepository logRepository;
 
     @Test
     public void testUploadOneFileReturns200andZip() throws Exception{
