@@ -1,18 +1,41 @@
 package com.SignicatTask.SignicatTask.Archiving;
 
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
+import java.io.IOException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-
+/*
+ * Service class for handling archiving.
+ */
 @Service
-//TODO
 public class ArchiveService {
 
-    public CompletableFuture<byte[]> archiveFiles(List<File> files) {
-        return new CompletableFuture<byte[]>();
+    private ArchiverInterface archiver;
+
+    public ArchiveService(){this.setArchivingMethod(ArchivingMethod.ZIP);}
+
+    public ArchiveService(ArchivingMethod method) {
+        this.setArchivingMethod(method);
     }
 
-}
+    // Add support for new archiving methods here
+    public void setArchivingMethod(ArchivingMethod method) {
+        switch (method) {
+            case ArchivingMethod.ZIP:
+                this.archiver = new ZipArchiver();
+                break;
+            default:
+                break;
+        }
+    }
+   
+    public byte[] archiveFiles(MultipartFile[] files) throws IOException {
+            return archiver.compress(files);
+        }
+
+    }
+
+
+
+
