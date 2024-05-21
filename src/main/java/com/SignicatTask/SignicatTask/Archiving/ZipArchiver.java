@@ -2,6 +2,7 @@ package com.SignicatTask.SignicatTask.Archiving;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -10,14 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * Class for compressing files via zip
  */
-public class ZipArchiver implements ArchiverInterface{
+public class ZipArchiver implements ArchiverInterface {
 
     /**
      * @param files
      * @return byte array of compressed file data
      */
     @Override
-    public byte[] compress(MultipartFile[] files) throws IOException{
+    public byte[] compress(MultipartFile[] files) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(baos);
@@ -40,6 +41,4 @@ public class ZipArchiver implements ArchiverInterface{
         }
         return baos.toByteArray();
     }
-    }
-
-
+}

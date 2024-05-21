@@ -1,7 +1,7 @@
 package com.SignicatTask.SignicatTask.Archiving;
 
-
 import java.io.IOException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +13,10 @@ public class ArchiveService {
 
     private ArchiverInterface archiver;
 
-    public ArchiveService(){this.setArchivingMethod(ArchivingMethod.ZIP);}
+    // default constructor sets archiving method to zip
+    public ArchiveService() {
+        this.setArchivingMethod(ArchivingMethod.ZIP);
+    }
 
     public ArchiveService(ArchivingMethod method) {
         this.setArchivingMethod(method);
@@ -29,13 +32,8 @@ public class ArchiveService {
                 break;
         }
     }
-   
+
     public byte[] archiveFiles(MultipartFile[] files) throws IOException {
-            return archiver.compress(files);
-        }
-
+        return archiver.compress(files);
     }
-
-
-
-
+}

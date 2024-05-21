@@ -18,7 +18,6 @@ import com.SignicatTask.SignicatTask.Archiving.ArchiveService;
 import com.SignicatTask.SignicatTask.Repository.LogRepository;
 import com.SignicatTask.SignicatTask.Repository.RequestData;
 
-//TODO comment
 
 /**
  * Unit tests of controller class.
