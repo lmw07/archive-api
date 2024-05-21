@@ -22,7 +22,6 @@ public class ZipArchiverTests {
     @Test
     void testBasicZipOf2Files() throws IOException {
 
-        // Create mock MultipartFiles
         MockMultipartFile mockFile1 = new MockMultipartFile(
             "file1.txt",
             "file1.txt",
@@ -52,7 +51,7 @@ public class ZipArchiverTests {
         ByteArrayOutputStream content = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
-        
+        // write unzipped bytes of first zipped file to content
         while ((len = zis.read(buffer)) > 0) {
             content.write(buffer, 0, len);
         }
@@ -63,7 +62,8 @@ public class ZipArchiverTests {
         assertEquals("file2.txt", zipEntry.getName());
 
 
-        content.reset(); // reset ByteArrayOutputStream to empty
+        // reset ByteArrayOutputStream to empty
+        content.reset(); 
         while ((len = zis.read(buffer)) > 0) {
             content.write(buffer, 0, len);
         }
