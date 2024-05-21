@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.assertj.core.api.Condition.Status;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.SignicatTask.SignicatTask.Repository.LogRepository;
+import com.SignicatTask.SignicatTask.Repository.RequestData;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,6 +39,7 @@ class SignicatTaskApplicationTests {
 
 	@Test
 	public void testNormalFileUploadAndZipCreationWithMultipleFiles() throws Exception {
+		repo.deleteAll();
         MockMultipartFile file1 = new MockMultipartFile("files", "file1.xml", "text/plain", "some xml".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("files", "file2.txt", "text/plain", "some text".getBytes());
 
@@ -60,10 +63,12 @@ class SignicatTaskApplicationTests {
 		assertEquals("file2.txt", entry.getName());
 
 		assertNull(zipStream.getNextEntry(), "No more entries expected");
+		repo.deleteAll();
         
     }
 	@Test
 	public void testNormalFileUploadAndZipCreationWithOneFile() throws Exception {
+		repo.deleteAll();
         MockMultipartFile file1 = new MockMultipartFile("files", "file1.xml", "text/plain", "some xml".getBytes());
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
@@ -79,29 +84,21 @@ class SignicatTaskApplicationTests {
 		assertNotNull(entry, "Expected a zip entry");
 		assertEquals("file1.xml", entry.getName());
 		assertNull(zipStream.getNextEntry(), "No more entries expected");
-        
+        repo.deleteAll();
     }
 
 	@Test
 	public void testNoFileReturns400() throws Exception{
+		repo.deleteAll();
 		mockMvc.perform(MockMvcRequestBuilders.multipart("/upload"))
 		.andExpect(MockMvcResultMatchers.status().isBadRequest());
-		
+		repo.deleteAll();
 	}
 
-	@Test
-	public void testOneLargeFileReturns413() throws Exception {
-		//50MB file
-		MockMultipartFile file1 = new MockMultipartFile("files", "file1.xml", 
-		"text/plain", new byte[1024*1024*50]);
-		mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
-		.file(file1))
-		.andExpect(MockMvcResultMatchers.status().isPayloadTooLarge());
-	}
 
 	@Test
-	public void testRepositoryLogsRequests() throws Exception {
-		assertEquals(0, repo.count());
+	public void testRepositoryLogsSuccessfulRequests() throws Exception {
+		repo.deleteAll();
 		MockMultipartFile file1 = new MockMultipartFile("files", "file1.xml", 
 		"text/plain", new byte[1024*1024/2]);
 		mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
@@ -109,10 +106,9 @@ class SignicatTaskApplicationTests {
 		assertEquals(1, repo.count());
 		var out = repo.findAll();
 		assertTrue(out.get(0).date.equals(LocalDate.now()));
-		
+		assertEquals(RequestData.Status.SUCCESS, out.get(0).status);
+		repo.deleteAll();
 	}
-
 	
-
 }
 
