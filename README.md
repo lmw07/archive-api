@@ -46,7 +46,9 @@ somewhere, probably in an object storage service like S3, which would introduce 
 
 Large files introduce a unique set of challenges for processing, both because of their memory requirements and slow upload and processing times. Below are some ways that these issues could be addressed:
 
- - Large files can quickly eat up the memory available to the application. To avoid storing files in memory, it might be possible to 
+- To avoid using all the available memory, files above a certain size can be written to disk. The advantage of this approach is that it is extremely easy to do in Spring (adjust spring.servlet.multipart.file-size-threshold) and prevents the application from running out of RAM. However, if a large volume of requests came in, the disk might fill up, especially if the server is running on containers with limited disk space. Furthermore, disk I/O is very slow, adding to the already lengthy upload and processing time.
+
+ -  To avoid storing files in memory at all, it might be possible to 
 process the files in a stream, (i.e. as the data comes in). The downside to this approach is that some compression methods require
 access to the whole file before they compress it, and thus they would be incompatible with this approach. The other downside to this
 approach is that it would be incompatible with many of the other suggested improvements for this issue listed below, all of which require
