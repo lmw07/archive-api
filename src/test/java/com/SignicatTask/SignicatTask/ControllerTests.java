@@ -5,6 +5,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -86,6 +88,19 @@ public class ControllerTests {
                 .file(file)
                 .param("method", "RAR"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        // verify save
+        verify(logRepository, times(1)).save(any(RequestData.class));
+    }
+
+    @Test
+    public void testExceptionCaught500Returned() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("files", "Hello file".getBytes());
+
+        when(service.archiveFiles(any())).thenThrow(new IOException());
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
+                .file(file))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
         // verify save
         verify(logRepository, times(1)).save(any(RequestData.class));
     }
