@@ -20,9 +20,12 @@ import com.SignicatTask.SignicatTask.Repository.RequestData;
 
 //TODO comment
 
+/**
+ * Unit tests of controller class.
+ */
 @WebMvcTest(Controller.class)
 public class ControllerTests {
-    
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -33,45 +36,59 @@ public class ControllerTests {
     private LogRepository logRepository;
 
     @Test
-    public void testUploadOneFileReturns200andZip() throws Exception{
+    public void testUploadOneFileReturns200andZip() throws Exception {
         MockMultipartFile file = new MockMultipartFile("files", "Hello file".getBytes());
 
-        when(service.archiveFiles(any())).thenReturn(new byte[]{1, 2, 3, 4});
-        
+        when(service.archiveFiles(any())).thenReturn(new byte[] { 1, 2, 3, 4 });
+
         mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
-                .file(file))
+                .file(file)
+                .param("method", "ZIP"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 // "Content-Disposition : attachment" ensures that file is downloaded by browser
-                .andExpect(MockMvcResultMatchers.header().string("Content-Disposition", "attachment; filename=\"archive.zip\""));
-        //verify save 
+                .andExpect(MockMvcResultMatchers.header().string("Content-Disposition",
+                        "attachment; filename=\"archive.zip\""));
+        // verify save
         verify(logRepository, times(1)).save(any(RequestData.class));
-        }
+    }
 
     @Test
-    public void testUploadMultipleFileReturns200andZip() throws Exception{
+    public void testUploadMultipleFileReturns200andZip() throws Exception {
         MockMultipartFile file1 = new MockMultipartFile("files", "Hello file, this is file 1".getBytes());
         MockMultipartFile file2 = new MockMultipartFile("files", "Hello file, this is file 2".getBytes());
 
-        when(service.archiveFiles(any())).thenReturn(new byte[]{1, 2, 3, 4});
-        
+        when(service.archiveFiles(any())).thenReturn(new byte[] { 1, 2, 3, 4 });
+
         mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
                 .file(file1)
                 .file(file2))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 // "Content-Disposition : attachment" ensures that file is downloaded by browser
-                .andExpect(MockMvcResultMatchers.header().string("Content-Disposition", "attachment; filename=\"archive.zip\""));
-         
-        //verify save 
+                .andExpect(MockMvcResultMatchers.header().string("Content-Disposition",
+                        "attachment; filename=\"archive.zip\""));
+
+        // verify save
         verify(logRepository, times(1)).save(any(RequestData.class));
     }
 
     @Test
-    public void testNoFileReturns400() throws Exception{
+    public void testNoFileReturns400() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.multipart("/upload"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
-    
 
+    @Test
+    public void testInvalidMethodParamReturns400() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("files", "Hello file".getBytes());
 
+        when(service.archiveFiles(any())).thenReturn(new byte[] { 1, 2, 3, 4 });
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
+                .file(file)
+                .param("method", "RAR"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        // verify save
+        verify(logRepository, times(1)).save(any(RequestData.class));
+    }
 
 }
