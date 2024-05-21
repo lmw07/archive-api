@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.SignicatTask.SignicatTask.Archiving.ArchiveService;
-import com.SignicatTask.SignicatTask.Archiving.ArchivingMethod;
+import com.SignicatTask.SignicatTask.Archiving.ArchivingMethodEnum;
 import com.SignicatTask.SignicatTask.Repository.LogRepository;
 import com.SignicatTask.SignicatTask.Repository.RequestData;
 
@@ -37,7 +37,7 @@ public class Controller {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFiles(@RequestParam("files") MultipartFile[] files,
-            @RequestParam(value = "method", defaultValue = "ZIP") ArchivingMethod method, HttpServletRequest request) {
+            @RequestParam(value = "method", defaultValue = "ZIP") ArchivingMethodEnum method, HttpServletRequest request) {
 
         // null file check
         if (files.length == 0 || files == null) {

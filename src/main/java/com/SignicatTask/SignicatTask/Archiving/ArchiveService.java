@@ -15,17 +15,17 @@ public class ArchiveService {
 
     // default constructor sets archiving method to zip
     public ArchiveService() {
-        this.setArchivingMethod(ArchivingMethod.ZIP);
+        this.setArchivingMethod(ArchivingMethodEnum.ZIP);
     }
 
-    public ArchiveService(ArchivingMethod method) {
+    public ArchiveService(ArchivingMethodEnum method) {
         this.setArchivingMethod(method);
     }
 
     // Add support for new archiving methods here
-    public void setArchivingMethod(ArchivingMethod method) {
+    public void setArchivingMethod(ArchivingMethodEnum method) {
         switch (method) {
-            case ArchivingMethod.ZIP:
+            case ArchivingMethodEnum.ZIP:
                 this.archiver = new ZipArchiver();
                 break;
             default:
