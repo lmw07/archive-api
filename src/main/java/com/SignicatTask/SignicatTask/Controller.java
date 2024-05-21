@@ -61,6 +61,8 @@ public class Controller {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(zipFile);
         } catch (Exception e) {
+            RequestData rqd = new RequestData(LocalDate.now(), request.getRemoteAddr(), RequestData.Status.FAIL);
+            logRepo.save(rqd);
             return ResponseEntity.internalServerError().build();
         }
     }
