@@ -54,7 +54,7 @@ access to the whole file before they compress it, and thus they would be incompa
 approach is that it would be incompatible with many of the other suggested improvements for this issue listed below, all of which require
 access to the whole file or files. However, if done well, this approach might virtually eliminate many of the memory issues associated with large files.
 
- - If multiple files were received, it might be possible to process them in parallel, reducing the required processing time. This could be done either synchronously (client connection remains open) or asynchronously. Parallel processing would likely be relatively easy to implement but is not compatible with some archiving methods.
+ - If multiple files were received, it might be possible to process them in parallel, reducing the required processing time. This could be done either synchronously (client connection remains open) or asynchronously. Parallel processing would likely be relatively easy to implement but might not be compatible with some archiving methods.
 
  - Asynchronous processing as discussed above would help alleviate the issues associated with slow processing, since the client's connection would not have to remain open while the file was processed.
 
