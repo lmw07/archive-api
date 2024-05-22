@@ -33,7 +33,7 @@ refactoring since request processing is already stateless.
 
 3. Asynchronous processing of requests. The request thread can hand the archiving job off to a work queue or similar structure
 and close the connection with the client immediately. The client can then access their job, either by polling a unique URI or by receiving it in a webhook or similar method. By decoupling request handling from archiving, the server's throughput increases
-dramatically. Furthermore, it gives more control over when and how archving jobs are processed, potentially allowing the use of fewer computing
+dramatically. Furthermore, it gives more control over when and how archiving jobs are processed, potentially allowing the use of fewer computing
 resources or other cost saving measures. \
 This approach represents a significant change in the way the application handles requests and would thus require significant refactoring.
 Furthermore, it introduces added complexity on both the client and the server, since some structure has to be set up so that the 
